@@ -57,7 +57,7 @@ def generate_launch_description():
         # of this launch file   ---> confirm you dont actually need this.
         # Node(
         #     package='tf2_ros', executable='static_transform_publisher', output='screen',
-        #     arguments=['0', '0', '0', '0', '0', '0', 'map', 'odom']
+        #     arguments=['0', '0', '-0.213', '0', '0', '0', 'base_footprint', 'base_link']
         # ),
 
         # # Node(rtabmap generates map, takes in odom and pointcloud/ laser go2 topics) map can be visualised in rviz also.
@@ -130,12 +130,29 @@ def generate_launch_description():
                 # 'publish_tf': True,
                 # 'map_frame_id': 'map',
                 # 'odom_frame_id': 'odom',
+                'grid/Sensor' :0, # 1 for laser, 0 for RGBD
+                'grid/RayTracing' :True, # 1 for ray tracing, 0 for ray casting
+                # 'grid/MaxGroundAngle' :45, # Max ground angle in degrees
+                # 'grid/MaxObstacleHeight' :2, # Max obstacle height in meters
             }],
 
             remappings=[
-                ('scan_cloud', '/utlidar/cloud'),
+                ('scan_cloud', '/utlidar/cloud_deskewed'),
+                # ('scan_cloud', '/refined_scan'),
                 ('odom', '/utlidar/robot_odom')
             ]
+            # ,
+
+            # arguments=[{
+            #     # Added to fix the issue of no free space in occupancy grid.
+            #     'grid/Sensor' :0, # 1 for laser, 0 for RGBD
+            #     'grid/RayTracing' :True, # 1 for ray tracing, 0 for ray casting
+            #     # 'grid/MaxGroundAngle' :45, # Max ground angle in degrees
+            #     # 'grid/MaxObstacleHeight' :2, # Max obstacle height in meters
+            #     'grid/MaxGroundHeight' :.3, # Max ground height in meters
+            #     'grid/NormalsSegmentation': False,
+            # }]
+
             # ,
             # arguments=[
             #     # TernaryTextSubstitution(IfCondition(LaunchConfiguration('restart_map')), '-d', ''),
@@ -194,6 +211,10 @@ def generate_launch_description():
                 ('odom', '/utlidar/robot_odom')
             ],
         ),
+
+        # Node(
+        #     package='unitree_go2_nav', executable='lidarToObs', output='screen',
+        # ),
 
         Node(package='rviz2',
                executable='rviz2',
